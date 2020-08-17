@@ -11,6 +11,7 @@ n_procs=MPI.Comm_size(comm)
 
 a=zeros(5,5)
 result=mpi_map(a, comm) do x
+    sleep(1)
     x+1.0
 end
 
