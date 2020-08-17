@@ -52,7 +52,7 @@ module MPIMap
                 send((idx, output), 0, 1, comm)
             end
             Barrier(comm)
-            Bcast!(result, 0, comm)
+            
             result=recv(0, 3, comm)
             result
         end
