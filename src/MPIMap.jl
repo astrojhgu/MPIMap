@@ -9,7 +9,8 @@ module MPIMap
         RT=Base.return_types(func, (eltype(data),))[1]
         result_cnt=0
         if my_rank==0
-            result=similar(data)
+            #result=similar(data)
+            result=Array{Union{Missin, RT}}(missing, size(data)...)
 
             println("waiting...")
             for (i, x) in enumerate(data)
