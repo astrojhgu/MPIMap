@@ -7,9 +7,10 @@ module MPIMap
         println(my_rank)
         n_procs=Comm_size(comm)
         RT=Base.return_types(func, (eltype(data),))[1]
-        result=similar(data)
         result_cnt=0
         if my_rank==0
+            result=similar(data)
+
             println("waiting...")
             for (i, x) in enumerate(data)
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
