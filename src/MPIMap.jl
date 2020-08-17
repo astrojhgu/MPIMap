@@ -11,9 +11,9 @@ module MPIMap
         if my_rank==0
             #result=similar(data)
             result=Array{Union{Missing, RT}}(missing, size(data)...)
-
+            missing_idx=findall(reshape(map(ismissing,result), length(result)))
             println("waiting...")
-            for (i, x) in enumerate(data)
+            for i in missing_idx
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
                 target=s.source
                 send(i, target, 2, comm)
@@ -34,7 +34,7 @@ module MPIMap
                 result_cnt+=1
                 r_idx, r=p
                 result[r_idx]=r
-                if result_cnt==length(data)
+                if result_cnt==length(missing_idx)
                     break
                 end
             end
