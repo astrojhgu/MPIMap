@@ -37,7 +37,10 @@ module MPIMap
                 end
             end
             Barrier(comm)
-            Bcast!(result, 0, comm)
+            #Bcast!(result, 0, comm)
+            for i in 1:(n_procs-1)
+                send(result, i,3,  comm)
+            end
             result
         else
             send(nothing, 0, 1, comm)
@@ -50,7 +53,8 @@ module MPIMap
                 send((idx, output), 0, 1, comm)
             end
             Barrier(comm)
-            Bcast!(result, 0, comm)
+            #Bcast!(result, 0, comm)
+            result=recv(0, 3, comm)
             result
         end
     end
