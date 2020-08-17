@@ -7,10 +7,11 @@ module MPIMap
         println(my_rank)
         n_procs=Comm_size(comm)
         RT=Base.return_types(func, (eltype(data),))[1]
-        result=Array{Union{Missing, RT}}(missing, size(data)...)
         
+
         result_cnt=0
         if my_rank==0
+            result=Array{Union{Missing, RT}}(missing, size(data)...)
             for (i, x) in enumerate(data)
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
                 target=s.source
@@ -35,7 +36,10 @@ module MPIMap
                 end
             end
             Barrier(comm)
-            Bcast!(result, 0, comm)
+            #Bcast!(result, 0, comm)
+            for i in 1:(n_procs-1)
+                send(result, i, 3, comm)
+            end
             result
         else
             send(nothing, 0, 1, comm)
@@ -49,6 +53,7 @@ module MPIMap
             end
             Barrier(comm)
             Bcast!(result, 0, comm)
+            result=recv(0, 3, comm)
             result
         end
     end
