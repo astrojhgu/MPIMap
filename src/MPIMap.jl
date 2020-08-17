@@ -10,6 +10,7 @@ module MPIMap
         result=similar(data)
         result_cnt=0
         if my_rank==0
+            println("waiting...")
             for (i, x) in enumerate(data)
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
                 target=s.source
@@ -22,6 +23,7 @@ module MPIMap
                     result[r_idx]=r
                 end
             end
+            println("shutting down...")
             while true
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
                 target=s.source
