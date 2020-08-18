@@ -2,18 +2,25 @@ module MPIMap
     using MPI:send,recv, Comm, Status, Barrier, Bcast!, Comm_rank, Comm_size, MPI_ANY_SOURCE
     export mpi_map
 
-    function mpi_map(func::Function, data::AbstractArray, comm::Comm)
+    function mpi_map(func::Function, data::AbstractArray{T}, comm::Comm; temp_result::Union{Nothing, AbstractArray{Union{Missing, U}}}) where {T,U}
         my_rank=Comm_rank(comm)
         #println(my_rank)
         n_procs=Comm_size(comm)
         n_workers=n_procs-1
         RT=Base.return_types(func, (eltype(data),))[1]
+        
         if my_rank==0
             #result=similar(data)
             reply_cnt=0
             
-            result=Array{Union{Missing, RT}}(missing, size(data)...)
-            result[1,1]=1.0
+            #result=Array{Union{Missing, RT}}(missing, size(data)...)
+            result = if isnothing(temp_result)
+                Array{Union{Missing, RT}}(missing, size(data)...)
+            else
+                @assert RT<:U
+                temp_result
+            end
+            
             missing_idx=findall(reshape(map(ismissing,result), length(result)))
             n_tasks=length(missing_idx)
             #println("waiting...")
