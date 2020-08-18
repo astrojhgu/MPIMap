@@ -9,7 +9,7 @@ comm = MPI.COMM_WORLD
 my_rank=MPI.Comm_rank(comm)
 n_procs=MPI.Comm_size(comm)
 
-a=zeros(1500,15)
+a=zeros(15,15)
 function cb(result)
     s=sum(map(result) do x
         if ismissing(x)
@@ -21,7 +21,7 @@ function cb(result)
     println(s)
 end
 
-temp_result=Matrix{Union{Missing, Float64}}(missing, 500, 500)
+temp_result=Matrix{Union{Missing, Float64}}(missing, 15, 15)
 
 result=mpi_map(a, comm, temp_result; mgr_cb=cb) do x
     x+1.0
