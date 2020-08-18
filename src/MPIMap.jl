@@ -32,6 +32,7 @@ module MPIMap
             while true
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
                 reply_cnt+=1
+                println("reply_cnt=", reply_cnt)
                 target=s.source
                 send(nothing, target, 2, comm)
                                 
