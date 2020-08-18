@@ -22,6 +22,7 @@ function cb(result)
 end
 
 temp_result=Matrix{Union{Missing, Float64}}(missing, 15, 15)
+temp_result[1,1]=50.0
 
 result=mpi_map(a, comm, temp_result; mgr_cb=cb) do x
     x+1.0
