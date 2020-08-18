@@ -4,7 +4,7 @@ module MPIMap
 
     function mpi_map(func::Function, data::AbstractArray, comm::Comm)
         my_rank=Comm_rank(comm)
-        println(my_rank)
+        #println(my_rank)
         n_procs=Comm_size(comm)
         n_workers=n_procs-1
         RT=Base.return_types(func, (eltype(data),))[1]
@@ -16,7 +16,7 @@ module MPIMap
             result[1,1]=1.0
             missing_idx=findall(reshape(map(ismissing,result), length(result)))
             n_tasks=length(missing_idx)
-            println("waiting...")
+            #println("waiting...")
             for i in missing_idx
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
                 reply_cnt+=1
@@ -24,16 +24,16 @@ module MPIMap
                 send(i, target, 2, comm)
 
                 if !isnothing(p)
-                    println("received from ",target)
+                    #println("received from ",target)
                     r_idx, r=p
                     result[r_idx]=r
                 end
             end
-            println("shutting down...")
+            #println("shutting down...")
             while true
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
                 reply_cnt+=1
-                println("reply_cnt=", reply_cnt)
+                #println("reply_cnt=", reply_cnt)
                 target=s.source
                 send(nothing, target, 2, comm)
                                 
@@ -50,7 +50,7 @@ module MPIMap
             for i in 1:n_workers
                 send(result, i,3,  comm)
             end
-            println("ntasks=", n_tasks)
+            #println("ntasks=", n_tasks)
             result
         else
             send(nothing, 0, 1, comm)
