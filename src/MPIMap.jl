@@ -6,6 +6,7 @@ module MPIMap
         my_rank=Comm_rank(comm)
         println(my_rank)
         n_procs=Comm_size(comm)
+        n_workers=n_procs-1
         RT=Base.return_types(func, (eltype(data),))[1]
         if my_rank==0
             #result=similar(data)
@@ -40,13 +41,13 @@ module MPIMap
                     r_idx, r=p
                     result[r_idx]=r
                 end
-                if reply_cnt==n_tasks+n_procs
+                if reply_cnt==n_tasks+n_workers
                     break
                 end
             end
             Barrier(comm)
             #Bcast!(result, 0, comm)
-            for i in 1:(n_procs-1)
+            for i in 1:n_workers
                 send(result, i,3,  comm)
             end
             println("ntasks=", n_tasks)
