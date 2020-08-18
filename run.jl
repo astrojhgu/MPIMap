@@ -9,7 +9,7 @@ comm = MPI.COMM_WORLD
 my_rank=MPI.Comm_rank(comm)
 n_procs=MPI.Comm_size(comm)
 
-a=zeros(500,500)
+a=zeros(1500,15)
 function cb(result)
     s=sum(map(result) do x
         if ismissing(x)
@@ -29,5 +29,5 @@ end
 
 
 if my_rank==0
-    #println(result)
+    println(result)
 end

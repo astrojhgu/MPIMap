@@ -1,5 +1,5 @@
 module MPIMap
-    using MPI:send,recv, Comm, Status, Barrier, Bcast!, Comm_rank, Comm_size, MPI_ANY_SOURCE
+    using MPI:send,recv, Comm, Status, Barrier, Comm_rank, Comm_size, MPI_ANY_SOURCE
     export mpi_map
 
     function mpi_map(func::Function, data::AbstractArray{T}, comm::Comm, temp_result::Union{Nothing, AbstractArray{Union{Missing, U}}}=nothing; mgr_cb::Union{Nothing, Function}=nothing) where {T,U}
@@ -60,7 +60,7 @@ module MPIMap
                 end
             end
             Barrier(comm)
-            #Bcast!(result, 0, comm)
+            
             for i in 1:n_workers
                 send(result, i,3,  comm)
             end
@@ -77,7 +77,6 @@ module MPIMap
                 send((idx, output), 0, 1, comm)
             end
             Barrier(comm)
-            #Bcast!(result, 0, comm)
             result=recv(0, 3, comm)
             result
         end
