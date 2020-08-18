@@ -7,14 +7,17 @@ module MPIMap
         println(my_rank)
         n_procs=Comm_size(comm)
         RT=Base.return_types(func, (eltype(data),))[1]
-        result_cnt=0
         if my_rank==0
             #result=similar(data)
+            reply_cnt=0
+            
             result=Array{Union{Missing, RT}}(missing, size(data)...)
             missing_idx=findall(reshape(map(ismissing,result), length(result)))
+            n_tasks=length(missing_idx)
             println("waiting...")
             for i in missing_idx
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
+                reply_cnt+=1
                 target=s.source
                 send(i, target, 2, comm)
 
@@ -28,13 +31,15 @@ module MPIMap
             println("shutting down...")
             while true
                 (p, s)=recv(MPI_ANY_SOURCE, 1, comm)::Tuple{Union{Nothing, Tuple{Int, RT}}, Status}
+                reply_cnt+=1
                 target=s.source
                 send(nothing, target, 2, comm)
-                @assert(!isnothing(p))
-                result_cnt+=1
-                r_idx, r=p
-                result[r_idx]=r
-                if result_cnt==length(missing_idx)
+                                
+                if !isnothing(p)
+                    r_idx, r=p
+                    result[r_idx]=r
+                end
+                if reply_cnt==n_tasks+n_procs
                     break
                 end
             end
