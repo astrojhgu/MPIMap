@@ -12,6 +12,7 @@ module MPIMap
             reply_cnt=0
             
             result=Array{Union{Missing, RT}}(missing, size(data)...)
+            result[1,1]=1.0
             missing_idx=findall(reshape(map(ismissing,result), length(result)))
             n_tasks=length(missing_idx)
             println("waiting...")
