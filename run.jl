@@ -20,7 +20,7 @@ function cb(result)
     end)
     println(s)
 end
-result=mpi_map(a, comm, mgr_cb=cb) do x
+result=mpi_map(a, comm; mgr_cb=cb) do x
     x+1.0
 end
 
