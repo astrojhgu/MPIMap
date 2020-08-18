@@ -24,7 +24,6 @@ module MPIMap
 
                 if !isnothing(p)
                     println("received from ",target)
-                    result_cnt+=1
                     r_idx, r=p
                     result[r_idx]=r
                 end
