@@ -49,6 +49,7 @@ module MPIMap
             for i in 1:(n_procs-1)
                 send(result, i,3,  comm)
             end
+            println("ntasks=", n_tasks)
             result
         else
             send(nothing, 0, 1, comm)
