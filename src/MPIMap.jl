@@ -2,7 +2,7 @@ module MPIMap
     using MPI:send,recv, Comm, Status, Barrier, Bcast!, Comm_rank, Comm_size, MPI_ANY_SOURCE
     export mpi_map
 
-    function mpi_map(func::Function, data::AbstractArray{T}, comm::Comm, temp_result::Union{Nothing, AbstractArray{Union{Missing, U}}}=nothing, mgr_cb::Union{Nothing, Function}=nothing) where {T,U}
+    function mpi_map(func::Function, data::AbstractArray{T}, comm::Comm, temp_result::Union{Nothing, AbstractArray{Union{Missing, U}}}=nothing; mgr_cb::Union{Nothing, Function}=nothing) where {T,U}
         my_rank=Comm_rank(comm)
         #println(my_rank)
         n_procs=Comm_size(comm)
