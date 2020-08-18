@@ -2,7 +2,7 @@ module MPIMap
     using MPI:send,recv, Comm, Status, Barrier, Bcast!, Comm_rank, Comm_size, MPI_ANY_SOURCE
     export mpi_map
 
-    function mpi_map(func::Function, data::AbstractArray{T}, comm::Comm, temp_result::Union{Nothing, AbstractArray{Union{Missing, U}}}=nothing) where {T,U}
+    function mpi_map(func::Function, data::AbstractArray{T}, comm::Comm, temp_result::Union{Nothing, AbstractArray{Union{Missing, U}}}=nothing, mgr_cb::Union{Nothing, Function}=nothing) where {T,U}
         my_rank=Comm_rank(comm)
         #println(my_rank)
         n_procs=Comm_size(comm)
@@ -18,6 +18,7 @@ module MPIMap
                 Array{Union{Missing, RT}}(missing, size(data)...)
             else
                 @assert RT<:U
+                @assert size(temp_result)==size(data)
                 temp_result
             end
             
@@ -34,6 +35,9 @@ module MPIMap
                     #println("received from ",target)
                     r_idx, r=p
                     result[r_idx]=r
+                    if !isnothing(mgr_cb)
+                        mgr_cb(result)
+                    end
                 end
             end
             #println("shutting down...")
@@ -47,6 +51,9 @@ module MPIMap
                 if !isnothing(p)
                     r_idx, r=p
                     result[r_idx]=r
+                    if !isnothing(mgr_cb)
+                        mgr_cb(result)
+                    end
                 end
                 if reply_cnt==n_tasks+n_workers
                     break
