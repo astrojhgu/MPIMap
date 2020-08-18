@@ -20,7 +20,10 @@ function cb(result)
     end)
     println(s)
 end
-result=mpi_map(a, comm; mgr_cb=cb) do x
+
+temp_result=Matrix{Union{Missing, Float64}}(missing, 500, 500)
+
+result=mpi_map(a, comm, temp_result; mgr_cb=cb) do x
     x+1.0
 end
 
