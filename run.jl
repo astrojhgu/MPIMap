@@ -12,7 +12,7 @@ n_procs=MPI.Comm_size(comm)
 a=zeros(500,500)
 function cb(result)
     s=sum(map(result) do x
-        if isnothing(x)
+        if ismissing(x)
             1
         else
             0
