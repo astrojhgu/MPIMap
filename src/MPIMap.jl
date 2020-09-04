@@ -81,6 +81,4 @@ module MPIMap
             result
         end
     end
-
-
 end # module
